@@ -1,0 +1,19 @@
+-------------------------------------------------------------------------------
+Test set: com.revature.RecipeDaoTest
+-------------------------------------------------------------------------------
+Tests run: 7, Failures: 1, Errors: 1, Skipped: 0, Time elapsed: 0.001 s <<< FAILURE! - in com.revature.RecipeDaoTest
+getAllRecipes_Success  Time elapsed: 0 s  <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "java.sql.ResultSet.next()" because "set" is null
+	at com.revature.RecipeDaoTest.getAllRecipes_Success(RecipeDaoTest.java:118)
+
+deleteRecipe_Success  Time elapsed: 0 s  <<< FAILURE!
+org.mockito.exceptions.verification.TooFewActualInvocations: 
+
+preparedStatement.setInt(1, 1);
+Wanted 2 times:
+-> at com.revature.RecipeDaoTest.deleteRecipe_Success(RecipeDaoTest.java:172)
+But was 1 time:
+-> at com.revature.dao.RecipeDAO.deleteRecipe(RecipeDAO.java:218)
+
+	at com.revature.RecipeDaoTest.deleteRecipe_Success(RecipeDaoTest.java:172)
+

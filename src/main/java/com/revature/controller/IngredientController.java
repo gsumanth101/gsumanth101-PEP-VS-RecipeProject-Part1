@@ -4,6 +4,10 @@ import io.javalin.Javalin;
 import io.javalin.http.Context;
 
 import com.revature.service.IngredientService;
+import com.revature.model.Ingredient;
+import com.revature.util.Page;
+import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -30,7 +34,7 @@ public class IngredientController {
      */
 
     public IngredientController(IngredientService ingredientService) {
-        
+        this.ingredientService = ingredientService;
     }
 
     /**
@@ -41,7 +45,14 @@ public class IngredientController {
      * @param ctx the Javalin context containing the request path parameter for the ingredient ID
      */
     public void getIngredient(Context ctx) {
+        int id = Integer.parseInt(ctx.pathParam("id"));
+        Optional<Ingredient> ingredient = ingredientService.findIngredient(id);
         
+        if (ingredient.isPresent()) {
+            ctx.status(200).json(ingredient.get());
+        } else {
+            ctx.status(404);
+        }
     }
 
     /**
@@ -52,7 +63,9 @@ public class IngredientController {
      * @param ctx the Javalin context containing the request path parameter for the ingredient id
      */
     public void deleteIngredient(Context ctx) {
-        
+        int id = Integer.parseInt(ctx.pathParam("id"));
+        ingredientService.deleteIngredient(id);
+        ctx.status(204);
     }
 
     /**
@@ -63,7 +76,17 @@ public class IngredientController {
      * @param ctx the Javalin context containing the request path parameter and updated ingredient data in the request body
      */
     public void updateIngredient(Context ctx) {
-       
+        int id = Integer.parseInt(ctx.pathParam("id"));
+        Optional<Ingredient> existingIngredient = ingredientService.findIngredient(id);
+        
+        if (existingIngredient.isPresent()) {
+            Ingredient ingredient = ctx.bodyAsClass(Ingredient.class);
+            ingredient.setId(id);
+            ingredientService.saveIngredient(ingredient);
+            ctx.status(204);
+        } else {
+            ctx.status(404);
+        }
     }
 
     /**
@@ -74,7 +97,9 @@ public class IngredientController {
      * @param ctx the Javalin context containing the ingredient data in the request body
      */
     public void createIngredient(Context ctx) {
-
+        Ingredient ingredient = ctx.bodyAsClass(Ingredient.class);
+        ingredientService.saveIngredient(ingredient);
+        ctx.status(201).json(ingredient);
     }
 
     /**
@@ -85,7 +110,19 @@ public class IngredientController {
      * @param ctx the Javalin context containing query parameters for pagination, sorting, and filtering
      */
     public void getIngredients(Context ctx) {
-       
+        String term = ctx.queryParam("term");
+        Integer page = getParamAsClassOrElse(ctx, "page", Integer.class, null);
+        Integer pageSize = getParamAsClassOrElse(ctx, "pageSize", Integer.class, null);
+        String sortBy = getParamAsClassOrElse(ctx, "sortBy", String.class, "id");
+        String sortDirection = getParamAsClassOrElse(ctx, "sortDirection", String.class, "ASC");
+        
+        if (page != null && pageSize != null) {
+            Page<Ingredient> result = ingredientService.searchIngredients(term, page, pageSize, sortBy, sortDirection);
+            ctx.status(200).json(result);
+        } else {
+            List<Ingredient> result = ingredientService.searchIngredients(term);
+            ctx.status(200).json(result);
+        }
     }
 
     /**

@@ -1,7 +1,10 @@
 package com.revature.dao;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +36,7 @@ public class IngredientDAO {
      * @param connectionUtil the utility used to connect to the database
      */
     public IngredientDAO(ConnectionUtil connectionUtil) {
-        
+        this.connectionUtil = connectionUtil;
     }
 
     /**
@@ -43,6 +46,18 @@ public class IngredientDAO {
      * @return the Ingredient object with the specified id.
      */
     public Ingredient getIngredientById(int id) {
+        try {
+            String sql = "SELECT * FROM INGREDIENT WHERE id = ?";
+            Connection conn = connectionUtil.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return mapSingleRow(rs);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
@@ -53,6 +68,19 @@ public class IngredientDAO {
      * @return the unique identifier of the created Ingredient.
      */
     public int createIngredient(Ingredient ingredient) {
+        try {
+            String sql = "INSERT INTO INGREDIENT (name) VALUES (?)";
+            Connection conn = connectionUtil.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            pstmt.setString(1, ingredient.getName());
+            pstmt.executeUpdate();
+            ResultSet rs = pstmt.getGeneratedKeys();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return 0;
     }
 
@@ -62,7 +90,15 @@ public class IngredientDAO {
      * @param ingredient the Ingredient object to be deleted.
      */
     public void deleteIngredient(Ingredient ingredient) {
-        
+        try {
+            String sql = "DELETE FROM INGREDIENT WHERE id = ?";
+            Connection conn = connectionUtil.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, ingredient.getId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -71,7 +107,16 @@ public class IngredientDAO {
      * @param ingredient the Ingredient object containing updated information.
      */
     public void updateIngredient(Ingredient ingredient) {
-        
+        try {
+            String sql = "UPDATE INGREDIENT SET name = ? WHERE id = ?";
+            Connection conn = connectionUtil.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, ingredient.getName());
+            pstmt.setInt(2, ingredient.getId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -80,7 +125,16 @@ public class IngredientDAO {
      * @return a list of all Ingredient objects.
      */
     public List<Ingredient> getAllIngredients() {
-        return null;
+        try {
+            String sql = "SELECT * FROM INGREDIENT ORDER BY id";
+            Connection conn = connectionUtil.getConnection();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            return mapRows(rs);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
     /**
@@ -90,7 +144,16 @@ public class IngredientDAO {
      * @return a Page of Ingredient objects containing the retrieved ingredients.
      */
     public Page<Ingredient> getAllIngredients(PageOptions pageOptions) {
-        return null;
+        try {
+            String sql = "SELECT * FROM INGREDIENT ORDER BY " + pageOptions.getSortBy() + " " + pageOptions.getSortDirection();
+            Connection conn = connectionUtil.getConnection();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            return pageResults(rs, pageOptions);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new Page<>();
+        }
     }
 
     /**
@@ -100,7 +163,17 @@ public class IngredientDAO {
      * @return a list of Ingredient objects that match the search term.
      */
     public List<Ingredient> searchIngredients(String term) {
-        return null;
+        try {
+            String sql = "SELECT * FROM INGREDIENT WHERE name LIKE ? ORDER BY id";
+            Connection conn = connectionUtil.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, "%" + term + "%");
+            ResultSet rs = pstmt.executeQuery();
+            return mapRows(rs);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
     /**
@@ -111,7 +184,17 @@ public class IngredientDAO {
      * @return a Page of Ingredient objects containing the retrieved ingredients.
      */
     public Page<Ingredient> searchIngredients(String term, PageOptions pageOptions) {
-        return null;
+        try {
+            String sql = "SELECT * FROM INGREDIENT WHERE name LIKE ? ORDER BY " + pageOptions.getSortBy() + " " + pageOptions.getSortDirection();
+            Connection conn = connectionUtil.getConnection();
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, "%" + term + "%");
+            ResultSet rs = pstmt.executeQuery();
+            return pageResults(rs, pageOptions);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new Page<>();
+        }
     }
 
     // below are helper methods for your convenience
@@ -124,7 +207,7 @@ public class IngredientDAO {
      * @throws SQLException if an error occurs while accessing the ResultSet.
      */
     private Ingredient mapSingleRow(ResultSet resultSet) throws SQLException {
-        return new Ingredient(resultSet.getInt("ID"), resultSet.getString("NAME"));
+        return new Ingredient(resultSet.getInt("id"), resultSet.getString("name"));
     }
 
     /**

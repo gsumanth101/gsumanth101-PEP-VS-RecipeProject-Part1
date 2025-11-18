@@ -1,6 +1,8 @@
 package com.revature.service;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
+import java.util.List;
 import com.revature.model.Chef;
 
 
@@ -41,7 +43,20 @@ public class AuthenticationService {
      * @return a session token if the login is successful; null otherwise
      */
     public String login(Chef chef) {
-        return null; 
+        // Search for chef by username
+        List<Chef> chefs = chefService.searchChefs(chef.getUsername());
+        
+        // Find exact match by username and password
+        for (Chef foundChef : chefs) {
+            if (foundChef.getUsername().equals(chef.getUsername()) && 
+                foundChef.getPassword().equals(chef.getPassword())) {
+                // Generate session token
+                String token = UUID.randomUUID().toString();
+                loggedInUsers.put(token, foundChef);
+                return token;
+            }
+        }
+        return null;
     }
 
     /**
@@ -51,7 +66,7 @@ public class AuthenticationService {
      */
 
     public void logout(String token) {
-        
+        loggedInUsers.remove(token);
     }
 
     /**
@@ -61,7 +76,8 @@ public class AuthenticationService {
 	 * @return the registered chef object
 	 */
     public Chef registerChef(Chef chef) {
-        return null;
+        chefService.saveChef(chef);
+        return chef;
     }
 
     /**
@@ -71,6 +87,6 @@ public class AuthenticationService {
      * @return the Chef object associated with the session token; null if not found
      */
     public Chef getChefFromSessionToken(String token) {
-        return null;
+        return loggedInUsers.get(token);
     }
 }

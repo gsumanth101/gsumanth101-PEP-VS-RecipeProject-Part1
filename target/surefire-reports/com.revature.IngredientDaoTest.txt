@@ -1,0 +1,37 @@
+-------------------------------------------------------------------------------
+Test set: com.revature.IngredientDaoTest
+-------------------------------------------------------------------------------
+Tests run: 8, Failures: 7, Errors: 1, Skipped: 0, Time elapsed: 5.111 s <<< FAILURE! - in com.revature.IngredientDaoTest
+readOneTest  Time elapsed: 0.625 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: The returned ingredient doesn't match the expected ingredient. Expected: Ingredient{id=1, name='carrot'} Actual: null ==> expected: <Ingredient{id=1, name='carrot'}> but was: <null>
+	at com.revature.IngredientDaoTest.readOneTest(IngredientDaoTest.java:53)
+
+updateIngredientTest  Time elapsed: 0.54 s  <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "com.revature.model.Ingredient.setName(String)" because "ingredient" is null
+	at com.revature.IngredientDaoTest.updateIngredientTest(IngredientDaoTest.java:74)
+
+searchAndPageIngredientsTest  Time elapsed: 0.573 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: The returned ingredients don't match the expected ingredients. ==> expected: <com.revature.util.Page@b6c19f40> but was: <com.revature.util.Page@1b4d89f>
+	at com.revature.IngredientDaoTest.searchAndPageIngredientsTest(IngredientDaoTest.java:136)
+
+createIngredientTest  Time elapsed: 0.841 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: The ID of the newly created ingredient should be 7 ==> expected: <7> but was: <0>
+	at com.revature.IngredientDaoTest.lambda$createIngredientTest$0(IngredientDaoTest.java:46)
+	at com.revature.IngredientDaoTest.createIngredientTest(IngredientDaoTest.java:43)
+
+deleteIngredientTest  Time elapsed: 1.268 s  <<< FAILURE!
+java.lang.AssertionError: Expected Ingredient count to be 1 less
+	at com.revature.IngredientDaoTest.deleteIngredientTest(IngredientDaoTest.java:61)
+
+searchIngredientsTest  Time elapsed: 0.558 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: The returned ingredients don't match the expected ingredients. Expected: [Ingredient{id=2, name='potato'}, Ingredient{id=3, name='tomato'}, Ingredient{id=6, name='stone'}] Actual: [] ==> iterable lengths differ, expected: <3> but was: <0>
+	at com.revature.IngredientDaoTest.searchIngredientsTest(IngredientDaoTest.java:117)
+
+getAndPageAllIngredientsTest  Time elapsed: 0.448 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: The returned ingredients don't match the expected ingredients. ==> actual iterable was <null>
+	at com.revature.IngredientDaoTest.getAndPageAllIngredientsTest(IngredientDaoTest.java:108)
+
+getAllIngredientsTest  Time elapsed: 0.258 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: The number of returned ingredients should match the expected size. ==> expected: <6> but was: <0>
+	at com.revature.IngredientDaoTest.getAllIngredientsTest(IngredientDaoTest.java:86)
+

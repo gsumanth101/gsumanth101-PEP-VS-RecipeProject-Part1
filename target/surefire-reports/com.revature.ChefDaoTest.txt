@@ -1,0 +1,16 @@
+-------------------------------------------------------------------------------
+Test set: com.revature.ChefDaoTest
+-------------------------------------------------------------------------------
+Tests run: 5, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 1.726 s <<< FAILURE! - in com.revature.ChefDaoTest
+testGetAllChefs  Time elapsed: 0.032 s  <<< FAILURE!
+org.mockito.exceptions.verification.WantedButNotInvoked: 
+
+Wanted but not invoked:
+statement.executeQuery(
+    "SELECT * FROM CHEF ORDER BY id"
+);
+-> at com.revature.ChefDaoTest.testGetAllChefs(ChefDaoTest.java:93)
+Actually, there were zero interactions with this mock.
+
+	at com.revature.ChefDaoTest.testGetAllChefs(ChefDaoTest.java:93)
+

@@ -5,6 +5,8 @@ import io.javalin.http.Context;
 
 import com.revature.service.AuthenticationService;
 import com.revature.service.ChefService;
+import com.revature.model.Chef;
+import java.util.List;
 
 
 
@@ -32,7 +34,8 @@ public class AuthenticationController {
      * @param authService the service used to manage authentication-related operations
      */
     public AuthenticationController(ChefService chefService, AuthenticationService authService) {
-        
+        this.chefService = chefService;
+        this.authService = authService;
     }
 
     /**
@@ -45,7 +48,20 @@ public class AuthenticationController {
      * @param ctx the Javalin context containing the chef information in the request body
      */
     public void register(Context ctx) {
+        Chef chef = ctx.bodyAsClass(Chef.class);
         
+        // Check if username already exists
+        List<Chef> existingChefs = chefService.searchChefs(chef.getUsername());
+        for (Chef existingChef : existingChefs) {
+            if (existingChef.getUsername().equals(chef.getUsername())) {
+                ctx.status(409).result("Username already exists");
+                return;
+            }
+        }
+        
+        // Register the chef
+        Chef registeredChef = authService.registerChef(chef);
+        ctx.status(201).json(registeredChef);
     }
 
     /**
@@ -56,7 +72,14 @@ public class AuthenticationController {
      * @param ctx the Javalin context containing the chef login credentials in the request body
      */
     public void login(Context ctx) {
+        Chef chef = ctx.bodyAsClass(Chef.class);
+        String token = authService.login(chef);
         
+        if (token != null) {
+            ctx.status(200).header("Authorization", token).result(token);
+        } else {
+            ctx.status(401).result("Invalid username or password");
+        }
     }
 
     /**
@@ -65,7 +88,14 @@ public class AuthenticationController {
      * @param ctx the Javalin context, containing the Authorization token in the request header
      */
     public void logout(Context ctx) {
-        
+        String authHeader = ctx.header("Authorization");
+        String token = (authHeader != null && authHeader.startsWith("Bearer ")) 
+            ? authHeader.substring(7) 
+            : authHeader;
+        if (token != null) {
+            authService.logout(token);
+        }
+        ctx.status(200).result("Logout successful");
     }
 
     /**

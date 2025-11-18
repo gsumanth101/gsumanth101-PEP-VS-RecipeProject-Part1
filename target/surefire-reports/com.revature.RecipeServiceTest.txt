@@ -1,0 +1,27 @@
+-------------------------------------------------------------------------------
+Test set: com.revature.RecipeServiceTest
+-------------------------------------------------------------------------------
+Tests run: 11, Failures: 2, Errors: 0, Skipped: 0, Time elapsed: 0.001 s <<< FAILURE! - in com.revature.RecipeServiceTest
+searchForListOfAllRecipes  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Recipes should match ==> iterable lengths differ, expected: <5> but was: <0>
+	at com.revature.RecipeServiceTest.searchForListOfAllRecipes(RecipeServiceTest.java:94)
+
+searchForPageOfAllRecipes  Time elapsed: 0 s  <<< FAILURE!
+org.mockito.exceptions.verification.WantedButNotInvoked: 
+
+Wanted but not invoked:
+recipeDAO.getAllRecipes(
+    <Capturing argument: PageOptions>
+);
+-> at com.revature.dao.RecipeDAO.getAllRecipes(RecipeDAO.java:84)
+
+However, there was exactly 1 interaction with this mock:
+recipeDAO.searchRecipesByTerm(
+    null,
+    com.revature.util.PageOptions@684b26b7
+);
+-> at com.revature.service.RecipeService.searchRecipes(RecipeService.java:74)
+
+
+	at com.revature.RecipeServiceTest.searchForPageOfAllRecipes(RecipeServiceTest.java:118)
+

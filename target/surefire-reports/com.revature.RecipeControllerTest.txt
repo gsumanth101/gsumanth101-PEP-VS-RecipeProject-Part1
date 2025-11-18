@@ -1,0 +1,16 @@
+-------------------------------------------------------------------------------
+Test set: com.revature.RecipeControllerTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 0, Errors: 3, Skipped: 0, Time elapsed: 0.002 s <<< FAILURE! - in com.revature.RecipeControllerTest
+testGetRecipesWithNoParams  Time elapsed: 0 s  <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "io.javalin.http.Context.json(Object)" because the return value of "io.javalin.http.Context.status(int)" is null
+	at com.revature.RecipeControllerTest.testGetRecipesWithNoParams(RecipeControllerTest.java:50)
+
+testGetRecipesWithRecipeName  Time elapsed: 0 s  <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "io.javalin.http.Context.result(String)" because the return value of "io.javalin.http.Context.status(int)" is null
+	at com.revature.RecipeControllerTest.testGetRecipesWithRecipeName(RecipeControllerTest.java:31)
+
+testGetRecipesWithNoResults  Time elapsed: 0 s  <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "io.javalin.http.Context.result(String)" because the return value of "io.javalin.http.Context.status(int)" is null
+	at com.revature.RecipeControllerTest.testGetRecipesWithNoResults(RecipeControllerTest.java:66)
+

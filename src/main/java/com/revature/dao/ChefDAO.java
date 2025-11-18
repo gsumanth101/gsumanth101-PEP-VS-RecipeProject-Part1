@@ -5,8 +5,11 @@ import com.revature.util.PageOptions;
 import com.revature.model.Chef;
 import java.util.List;
 import java.util.ArrayList;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 
 /**
@@ -31,7 +34,7 @@ public class ChefDAO {
      * @param connectionUtil the utility used to connect to the database
      */
     public ChefDAO(ConnectionUtil connectionUtil) {
-        
+        this.connectionUtil = connectionUtil;
     }
 
     /**
@@ -40,7 +43,16 @@ public class ChefDAO {
      * @return a list of all Chef objects
      */
     public List<Chef> getAllChefs() {
-        return null;
+        try {
+            String sql = "SELECT * FROM CHEF ORDER BY id";
+            Connection conn = connectionUtil.getConnection();
+            Statement stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            return mapRows(rs);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
     /**
@@ -50,7 +62,15 @@ public class ChefDAO {
      * @return a paginated list of Chef objects
      */
     public Page<Chef> getAllChefs(PageOptions pageOptions) {
-        return null;
+        try {
+            String sql = "SELECT * FROM CHEF ORDER BY " + pageOptions.getSortBy() + " " + pageOptions.getSortDirection();
+            Connection conn = connectionUtil.getConnection();
+            ResultSet rs = conn.prepareStatement(sql).executeQuery();
+            return pageResults(rs, pageOptions);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new Page<>();
+        }
     }
 
     /**
@@ -60,6 +80,18 @@ public class ChefDAO {
      * @return the Chef object, if found.
      */
     public Chef getChefById(int id) {
+        try {
+            String sql = "SELECT * FROM CHEF WHERE id = ?";
+            Connection conn = connectionUtil.getConnection();
+            java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, id);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return mapSingleRow(rs);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
@@ -70,6 +102,22 @@ public class ChefDAO {
      * @return the unique identifier of the created Chef.
      */
     public int createChef(Chef chef) {
+        try {
+            String sql = "INSERT INTO CHEF (username, email, password, is_admin) VALUES (?, ?, ?, ?)";
+            Connection conn = connectionUtil.getConnection();
+            java.sql.PreparedStatement pstmt = conn.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS);
+            pstmt.setString(1, chef.getUsername());
+            pstmt.setString(2, chef.getEmail());
+            pstmt.setString(3, chef.getPassword());
+            pstmt.setBoolean(4, chef.isAdmin());
+            pstmt.executeUpdate();
+            ResultSet rs = pstmt.getGeneratedKeys();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return 0;
     }
 
@@ -79,7 +127,19 @@ public class ChefDAO {
      * @param chef the Chef object containing updated information.
      */
     public void updateChef(Chef chef) {
-        
+        try {
+            String sql = "UPDATE CHEF SET username = ?, email = ?, password = ?, is_admin = ? WHERE id = ?";
+            Connection conn = connectionUtil.getConnection();
+            java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, chef.getUsername());
+            pstmt.setString(2, chef.getEmail());
+            pstmt.setString(3, chef.getPassword());
+            pstmt.setBoolean(4, chef.isAdmin());
+            pstmt.setInt(5, chef.getId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -88,7 +148,15 @@ public class ChefDAO {
      * @param chef the Chef object to be deleted.
      */
     public void deleteChef(Chef chef) {
-        
+        try {
+            String sql = "DELETE FROM CHEF WHERE id = ?";
+            Connection conn = connectionUtil.getConnection();
+            java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, chef.getId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -98,7 +166,17 @@ public class ChefDAO {
      * @return a list of Chef objects that match the search term.
      */
     public List<Chef> searchChefsByTerm(String term) {
-        return null;
+        try {
+            String sql = "SELECT * FROM CHEF WHERE username LIKE ?";
+            Connection conn = connectionUtil.getConnection();
+            java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, "%" + term + "%");
+            ResultSet rs = pstmt.executeQuery();
+            return mapRows(rs);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 
     /**
@@ -109,7 +187,17 @@ public class ChefDAO {
      * @return a paginated list of Chef objects that match the search term
      */
     public Page<Chef> searchChefsByTerm(String term, PageOptions pageOptions) {
-        return null;
+        try {
+            String sql = "SELECT * FROM CHEF WHERE username LIKE ? ORDER BY " + pageOptions.getSortBy() + " " + pageOptions.getSortDirection();
+            Connection conn = connectionUtil.getConnection();
+            java.sql.PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, "%" + term + "%");
+            ResultSet rs = pstmt.executeQuery();
+            return pageResults(rs, pageOptions);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new Page<>();
+        }
     }
 
     
